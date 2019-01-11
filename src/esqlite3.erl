@@ -41,8 +41,8 @@
 
 -export([q/2, q/3, map/3, foreach/3]).
 
--define(DEFAULT_TIMEOUT, 5000).
--define(DEFAULT_CHUNK_SIZE, 5000).
+-define(DEFAULT_TIMEOUT, 50000).
+-define(DEFAULT_CHUNK_SIZE, 50000).
 
 %%
 -type connection() :: {connection, reference(), term()}.
@@ -425,18 +425,11 @@ close({connection, _Ref, Connection}, Timeout) ->
 %% Internal functions
 
 receive_answer(Ref, Timeout) ->
-    Start = os:timestamp(),
     receive
-        {esqlite3, Ref, Resp} ->
+        {esqlite3, Ref, Resp} -> 
             Resp;
         {esqlite3, _, _}=StaleAnswer ->
-            error_logger:warning_msg("Esqlite3: Ignoring stale answer ~p~n", [StaleAnswer]),
-            PassedMics = timer:now_diff(os:timestamp(), Start) div 1000,
-            NewTimeout = case Timeout - PassedMics of
-                             Passed when Passed < 0 -> 0;
-                             TO -> TO
-                         end,
-            receive_answer(Ref, NewTimeout)
+            error_logger:warning_msg("Esqlite3: Ignoring stale answer ~p~n", [StaleAnswer])
     after Timeout ->
             throw({error, timeout, Ref})
     end.
