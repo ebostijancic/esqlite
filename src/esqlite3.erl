@@ -41,8 +41,8 @@
 
 -export([q/2, q/3, map/3, foreach/3]).
 
--define(DEFAULT_TIMEOUT, 50000).
--define(DEFAULT_CHUNK_SIZE, 50000).
+-define(DEFAULT_TIMEOUT, 300000).
+-define(DEFAULT_CHUNK_SIZE, 5000).
 
 %%
 -type connection() :: {connection, reference(), term()}.
